@@ -312,6 +312,21 @@ const objects = {
     text: {
       marginBottom: 5
     }
+  },
+  share: {
+    container: {
+      flex: 1,
+      marginBottom: metrics.baseMargin
+    },
+    message: {
+      paddingHorizontal: metrics.baseMargin,
+      paddingVertical: metrics.smallMargin,
+      backgroundColor: colors.lightGreen,
+      borderWidth: 2,
+      borderColor: colors.semiDarken,
+      borderRadius: 2,
+      textAlignVertical: 'top'
+    }
   }
 };
 

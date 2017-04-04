@@ -21,6 +21,7 @@ import StartingEleven from '../components/startingEleven/StartingElevenContainer
 import AddPlayerToEleven from '../components/startingEleven/AddPlayerToEleven';
 import AddPlayerToBench from '../components/startingEleven/AddPlayerToBench';
 import PickFormation from '../components/startingEleven/PickFormation';
+import ShareEleven from '../components/startingEleven/ShareEleven';
 import PlayingMatch from '../components/playingMatch/PlayingMatchContainer';
 import AddStat from '../components/playingMatch/AddStat';
 import SubPlayer from '../components/playingMatch/SubPlayer';
@@ -125,6 +126,13 @@ class Routes extends Component {
                 duration={1}
                 renderBackButton={NavItems.closeButton}
                 component={PickFormation}
+                direction="vertical"
+                />
+                <Scene key="shareEleven"
+                title="Dela laguppställning"
+                duration={1}
+                renderBackButton={NavItems.closeButton}
+                component={ShareEleven}
                 direction="vertical"
                 />
               </Scene>

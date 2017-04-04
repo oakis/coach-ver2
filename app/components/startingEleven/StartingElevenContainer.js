@@ -1,8 +1,9 @@
 // Dependencies
 import React, { Component } from 'React';
 import { connect } from 'react-redux';
-import { Alert, View, Image, Dimensions } from 'react-native';
+import { Alert, View, Image, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import { takeSnapshot, dirs } from 'react-native-view-shot';
 import { goToRoute } from '../../actions/routeActions';
 import { saveEleven } from '../../actions/gameActions';
 import autobind from 'autobind-decorator';
@@ -12,8 +13,10 @@ import Button from '../../common/Button';
 import UpdateDelete from '../../common/UpdateDelete';
 import Player from './Player';
 import Stats from './Stats';
+import CurrentPageSettings from '../../common/CurrentPageSettings';
 // Styles
 import { objects, colors, metrics } from '../../themes';
+import styles from '../../navigation/styles/navigationContainerStyle';
 // Temp
 import formations from './formations';
 
@@ -29,7 +32,8 @@ class StartingElevenContainer extends Component {
       formation: formations[i],
       shirtColor: this.getTeamColors('primary'),
       shortsColor: this.getTeamColors('secondary'),
-      pickingPosition: null
+      pickingPosition: null,
+      isVisible: false
     };
   }
   componentWillMount() {
@@ -38,6 +42,22 @@ class StartingElevenContainer extends Component {
     } else {
       goToRoute(this.props.route,{id: this.props.id},false);
     }
+  }
+  componentDidMount() {
+    Actions.refresh({ renderRightButton: this.renderPageSettings });
+  }
+  renderPageSettings() {
+    return (
+      <TouchableOpacity onPress={() => this.togglePageSettings()}>
+        <Icon name="more-vert"
+          size={metrics.icons.medium}
+          style={styles.rightButton}
+        />
+      </TouchableOpacity>
+    );
+  }
+  togglePageSettings() {
+    this.setState({isVisible: !this.state.isVisible});
   }
   getTeamColors(color) {
     const { primary, secondary } = this.props.teamColors;
@@ -173,43 +193,70 @@ class StartingElevenContainer extends Component {
     goToRoute('pickFormation', { formations, updateFormation: this.updateFormation }, false);
   }
   render() {
-      return (
-        <Image source={require('../../images/field2.png')} style={[objects.screen.field]} onLayout={(e) => this.getImageSize(e)}>
-          {this.getPlayers()}
-          <UpdateDelete
-            updateText={<Icon name="check" size={metrics.icons.small} style={{ color: colors.snow }}/>}
-            deleteText={<Icon name="close" size={metrics.icons.small} style={{ color: colors.snow }}/>}
-            onDeleteAction={this.removeAllFromEleven}
-            onUpdateAction={this.saveEleven}
-            roundButton
+    const { isVisible, startingEleven, bench, formation } = this.state;
+    const { game, club } = this.props;
+    const { date, opponent, venue } = game;
+    const { PictureDir } = dirs;
+    const windowWidth = Dimensions.get('window').width;
+    const windowHeight = Dimensions.get('window').height;
+    return (
+      <Image ref="field" source={require('../../images/field2.png')} style={[objects.screen.field]} onLayout={(e) => this.getImageSize(e)}>
+        {this.getPlayers()}
+        <UpdateDelete
+          updateText={<Icon name="check" size={metrics.icons.small} style={{ color: colors.snow }}/>}
+          deleteText={<Icon name="close" size={metrics.icons.small} style={{ color: colors.snow }}/>}
+          onDeleteAction={this.removeAllFromEleven}
+          onUpdateAction={this.saveEleven}
+          roundButton
+        />
+        <View style={{ position: 'absolute', top: 10, left: windowWidth / 2 - 25 }}>
+          <Button
+            text={<Icon name="weekend" size={metrics.icons.medium} style={{ color: colors.snow }}/>}
+            onPress={() => this.pickPlayer('BENCH')}
+            buttonType="benchRound"
           />
-          <View style={{ position: 'absolute', top: 10, left: Dimensions.get('window').width / 2 - 25 }}>
-            <Button
-              text={<Icon name="weekend" size={metrics.icons.medium} style={{ color: colors.snow }}/>}
-              onPress={() => this.pickPlayer('BENCH')}
-              buttonType="benchRound"
-            />
-          </View>
-          <Stats onButton={this.changeFormation} bench={this.state.bench} formation={this.state.formation.name} />
-        </Image>
-      );
+        </View>
+        <Stats onButton={this.changeFormation} bench={this.state.bench} formation={this.state.formation.name} />
+        <CurrentPageSettings visible={isVisible} toggle={() => this.togglePageSettings()}>
+          <Text style={objects.settingsMenu.text} onPress={() => {
+            this.togglePageSettings();
+            takeSnapshot(this.refs.field, {
+              format: 'jpeg',
+              quality: 0.8,
+              path: `${PictureDir}/${game._id}.jpg`
+            })
+            .then(
+              imgUri => {
+                Image.getSize(imgUri, (width, height) => {
+                  width = windowWidth - (metrics.baseMargin * 2);
+                  height = windowHeight - (metrics.baseMargin * 2);
+                  goToRoute('shareEleven', { startingEleven, bench, formation, date, opponent, venue, club, imgUri, width, height }, false);
+                });
+            },
+              error => console.error('Oops, snapshot failed', error)
+            );
+          }}>Dela på Facebook</Text>
+        </CurrentPageSettings>
+      </Image>
+    );
   }
 }
 
 function mapStateToProps(state,ownProps) {
   const { players, user } = state;
-  const { teamColors } = user;
-  const formation = '4-4-2';
+  const { teamColors, club } = user;
   const game = state.games.find(g => g._id === ownProps.id);
   const startingEleven = game.players.filter(p => p.position !== 'BENCH');
   const bench = game.players.filter(p => p.position === 'BENCH');
+  const formation = game.formation || '4-4-2';
   return {
     game,
     players,
     teamColors,
     formation,
     startingEleven,
-    bench
+    bench,
+    club
   };
 }
 
