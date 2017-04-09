@@ -17,6 +17,7 @@ import CurrentPageSettings from '../../common/CurrentPageSettings';
 // Styles
 import { objects, metrics, colors } from '../../themes';
 import styles from '../../navigation/styles/navigationContainerStyle';
+import {beginAjaxCall,ajaxCallError,ajaxCallDone} from '../../actions/ajaxActions';
 
 @autobind
 class SinglePlayerContainer extends Component {
@@ -28,12 +29,15 @@ class SinglePlayerContainer extends Component {
       active: 'game',
       isVisible: false
     };
+    this.initial = true;
   }
   componentDidMount() {
     Actions.refresh({ renderRightButton: this.renderPageSettings });
+    this.props.dispatch(beginAjaxCall());
     InteractionManager.runAfterInteractions(() => {
       this.setStats('game');
       this.setTeamStats('all');
+      this.initial = false;
     });
   }
   componentWillReceiveProps(nextProps) {
@@ -55,6 +59,9 @@ class SinglePlayerContainer extends Component {
     this.setState({isVisible: !this.state.isVisible});
   }
   async setStats(type) {
+    if (!this.initial) {
+      this.props.dispatch(beginAjaxCall());
+    }
     if (this.state.active !== type) { this.setState({active: type}); }
     const url = `${rootUrl}/api/playerStats/${type}/${this.props.player._id}/`;
     const headers = await getHeaders();
@@ -69,7 +76,9 @@ class SinglePlayerContainer extends Component {
           playerStats: json.playerStats
         });
       }
+        this.props.dispatch(ajaxCallDone());
     } else {
+      this.props.dispatch(ajaxCallError());
       Alert.alert('Något gick fel',json.message);
     }
   }
@@ -114,7 +123,6 @@ class SinglePlayerContainer extends Component {
     const { active, teamStats, playerStats, isVisible } = this.state;
     const name = (player) ? player.name.toUpperCase() : null;
     const phone = (player) ? player.phone : null;
-    const loading = (!teamStats[0].hasOwnProperty('club') && !playerStats[0].hasOwnProperty('goalsAvg'));
     return (
       <View style={objects.screen.mainContainer}>
         <CurrentPageSettings visible={isVisible} toggle={() => this.togglePageSettings()}>
@@ -129,7 +137,6 @@ class SinglePlayerContainer extends Component {
               [{ text: 'Avbryt' },{ text: 'Radera spelaren', onPress: () => this.deletePlayer() }]);
           }}>Radera spelare</Text>
         </CurrentPageSettings>
-        <LoadingSpinner loading={loading} />
         <ScrollView style={[objects.screen.scrollViewContainer]}>
           <View style={[objects.listitems.header, {flexDirection:'row',justifyContent:'flex-start',alignItems:'center'}]} >
             <Text style={[objects.listitems.headerText, {fontSize:16, flex:1}]} >{ name }</Text>
