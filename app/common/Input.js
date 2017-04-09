@@ -19,7 +19,8 @@ export default function Input({
     onBlur,
     label = '',
     error,
-    submitted
+    submitted,
+    defaultValue = null
   }) {
   return (
     <View style={[objects.inputs.container, checkErrorForContainer(submitted,error)]} >
@@ -40,6 +41,7 @@ export default function Input({
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize}
         onSubmitEditing={onSubmitEditing}
+        defaultValue={defaultValue}
       />
     </View>
   );

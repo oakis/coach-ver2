@@ -20,14 +20,18 @@ class SubPlayer extends Component {
     this.state = {
       selectedOut: [],
       selectedIn:[],
-      minute: { value: this.props.minute } || {},
+      minute: {},
       submitted: false
     };
     this.validators = {minute: false };
     this.createValidator = createValidator.bind(this);
     this.checkValidation = checkValidation.bind(this);
   }
+  componentDidMount() {
+    this.onChangeMinute(this.props.minute);
+  }
   onChangeMinute(value) {
+    console.log(value);
     this.createValidator('minute','number')(value);
   }
   checkSubOut(id) {
@@ -68,6 +72,7 @@ class SubPlayer extends Component {
           submitted={submitted}
           maxLength={3}
           keyboardType="numeric"
+          defaultValue={this.props.minute}
         />
         <SubList playing={playing} bench={bench} selectedIn={selectedIn} selectedOut={selectedOut} onPressOut={this.checkSubOut} onPressIn={this.checkSubIn} />
         <View style={[objects.screen.marginContainer]}>
@@ -90,12 +95,10 @@ function mapStateToProps(state,ownProps) {
       bench.push(player);
     }
   });
-  const minute = ownProps.minute.toString();
   return {
     game,
     playing,
-    bench,
-    minute
+    bench
   };
 }
 
