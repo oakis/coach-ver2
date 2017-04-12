@@ -27,11 +27,7 @@ class SubPlayer extends Component {
     this.createValidator = createValidator.bind(this);
     this.checkValidation = checkValidation.bind(this);
   }
-  componentDidMount() {
-    this.onChangeMinute(this.props.minute);
-  }
   onChangeMinute(value) {
-    console.log(value);
     this.createValidator('minute','number')(value);
   }
   checkSubOut(id) {

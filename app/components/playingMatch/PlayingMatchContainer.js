@@ -58,8 +58,9 @@ class PlayingMatchContainer extends Component {
     }
   }
   subPlayer() {
+    const minute = this.calculateTime().substring(0, 2);
     if (!this.checkIfMatchEnded()) {
-      goToRoute('subPlayerModal',{ id: this.props.id, minute: this.calculateTime().substring(0, 2) || 0 },false);
+      goToRoute('subPlayerModal',{ id: this.props.id, minute: (minute !== '00') ? minute : '' },false);
     }
   }
   checkIfMatchEnded() {
