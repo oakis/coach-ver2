@@ -1,5 +1,5 @@
 import React from 'React';
-import Spinner from 'react-native-loading-spinner-overlay';	
+import Spinner from 'react-native-loading-spinner-overlay';
 // Styles
 import {colors} from './themes';
 
