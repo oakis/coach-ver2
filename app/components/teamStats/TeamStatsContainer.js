@@ -34,10 +34,10 @@ class TeamStatsContainer extends Component {
     });
     const json = await response.json();
     if (json.success) {
+      this.props.dispatch(ajaxCallDone());
       if (json.team.length) {
         this.setState({ teamStats: [ ...json.team, ...json.training ] });
       }
-        this.props.dispatch(ajaxCallDone());
     } else {
       this.props.dispatch(ajaxCallError());
       Alert.alert('Något gick fel', json.message);
