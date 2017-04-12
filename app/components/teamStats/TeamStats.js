@@ -325,13 +325,10 @@ export default class TeamStats extends Component {
           <View>
             <Text style={objects.stats.barText}>Närvaro i snitt</Text>
             <View style={[objects.stats.barContainer,{ width }]}>
-              <View style={[objects.stats.barFor, { width: (avgAttendance !== 0) ? (avgAttendance / 100) * width - metrics.marginHorizontal : width - (metrics.marginHorizontal * 2) }]}>
-                <Text style={objects.stats.leftText}/>
-              </View>
-              <View style={[objects.stats.barAgainst, { width: (avgAttendance !== 0) ? (Math.abs(100 - avgAttendance) / 100) * width - metrics.marginHorizontal : width - (metrics.marginHorizontal * 2), backgroundColor: colors.neutral }]}>
-                <Text style={objects.stats.rightText}/>
-              </View>
+              <View style={[objects.stats.barFor, { width: (avgAttendance !== 0) ? (avgAttendance / 100) * width - metrics.marginHorizontal : width - (metrics.marginHorizontal * 2) }]}/>
+              <View style={[objects.stats.barAgainst, { width: (avgAttendance !== 0) ? (Math.abs(100 - avgAttendance) / 100) * width - metrics.marginHorizontal : width - (metrics.marginHorizontal * 2), backgroundColor: colors.neutral }]}/>
             </View>
+            <Text style={[objects.stats.textOnTop,{ width: width }]}>{avgAttendance}%</Text>
           </View>
         </View>
 
@@ -341,7 +338,6 @@ export default class TeamStats extends Component {
 
   render() {
     const { teamStats } = this.props;
-    // const teamStats = [{},{}];
     const { ready } = this.state;
     const exists = teamStats[0].hasOwnProperty('totalGoalsFor');
     return (exists && ready) ? this.renderStats() : this.renderDummy();

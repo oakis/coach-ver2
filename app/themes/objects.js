@@ -296,6 +296,13 @@ const objects = {
     showAgainst: {
       borderTopLeftRadius: 15,
       borderBottomLeftRadius: 15
+    },
+    textOnTop: {
+      position: 'relative',
+      top: -31,
+      height: 20,
+      textAlignVertical: 'center',
+      textAlign: 'center',
     }
   },
   settingsMenu: {
