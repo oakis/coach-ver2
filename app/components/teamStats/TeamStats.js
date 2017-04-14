@@ -26,7 +26,7 @@ export default class TeamStats extends Component {
   renderDummy() {
     const width = Dimensions.get('window').width;
     return (
-      <View style={{ opacity: 0.5 }}>
+      <View>
 
         <View style={objects.stats.header}>
           <Text style={[objects.listitems.headerText,objects.stats.leftText,{fontSize: 16}]}>Klubb</Text>
